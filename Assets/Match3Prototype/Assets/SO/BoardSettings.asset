@@ -16,3 +16,13 @@ MonoBehaviour:
   height: 5
   backgroundTileView: {fileID: 3685189621343764631, guid: 5dd2744ce74004c4b99198107ea23821,
     type: 3}
+  blockList:
+  - blockPrefab: {fileID: 8715923652627567433, guid: 1a432b1ae2458a2458467f22c0f72ae5,
+      type: 3}
+    percentage: 20
+  - blockPrefab: {fileID: 2053955811995583941, guid: dff18f73d537df147a89bd65efb7fc90,
+      type: 3}
+    percentage: 30
+  - blockPrefab: {fileID: 4907419488952335374, guid: c9be743cf675b2344b87a087bde1e496,
+      type: 3}
+    percentage: 50

@@ -11,11 +11,7 @@ namespace Board
         private int height = 0;
         private GameObject tilePrefab;
         private BgTileView[,] bgTiles;
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
+        
         public void SetTilePrefab(GameObject tilePrefab)
         {
             this.tilePrefab = tilePrefab;
@@ -35,11 +31,19 @@ namespace Board
             {
                 for (int j = 0; j < height; j++)
                 {
-                    Vector2 pos = new Vector2(i, j);
+                    Vector3 pos = new Vector3(i, j,0);
                     GameObject bgTile=Instantiate(tilePrefab, pos, Quaternion.identity) as GameObject;                    
-                    bgTile.transform.SetParent(this.transform.parent);
+                   // Debug.Log("<color=red> position</color>"+pos,bgTile);
+                    bgTile.transform.SetParent(this.transform);
+                    bgTiles[i,j] = bgTile.GetComponent<BgTileView>();
                 }
             }
+        }
+
+        public void SpawnBlock(BlockView blockView,int row, int column)
+        {            
+            GameObject block = Instantiate(blockView.gameObject, bgTiles[row, column].transform.position, Quaternion.identity)as GameObject;
+            block.transform.SetParent(bgTiles[row, column].transform);
         }
     }
 }

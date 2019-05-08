@@ -12,7 +12,7 @@ namespace Commons
         protected override void OnInitialize()
         {
             base.OnInitialize();
-            boardService = new BoardService(boardScriptableObject);            
+            boardService = new BoardService(boardScriptableObject);              
         }
 
     }
