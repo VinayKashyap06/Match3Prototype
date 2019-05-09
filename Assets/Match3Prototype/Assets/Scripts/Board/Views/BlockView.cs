@@ -39,35 +39,31 @@ namespace Board
         private void CalculateSwipe()
         {
             angle=Mathf.Atan2(finalPosition.y - startPosition.y, finalPosition.x - startPosition.x)* 180/Mathf.PI;
-            Debug.Log(angle);
+         //   Debug.Log(angle);
             ShuffleBlocks();
         }
         private void ShuffleBlocks()
         {
             if(angle>=-45f && angle <= 45)
-            {
-                //right swipe
-                Debug.Log("<color=red>row "+row +" column"+ column+" </color>");
+            {             
+                //Debug.Log("<color=red>row "+row +" column"+ column+" </color>");
                 boardController.MoveRight(row, column);
             }
             else if (angle>45 && angle<=135)
-            {
-                //up swipe
-                Debug.Log("up");
+            {             
+               // Debug.Log("up");
                 boardController.MoveUp(row, column);
                 
             }
             else if (angle>=135 || angle<=-135)
-            {
-                //left swipe
-                Debug.Log("left");
+            {                
+               // Debug.Log("left");
                 boardController.MoveLeft(row, column);
             }
             else if (angle>-135 && angle<=-45)
             {
-                Debug.Log("down");
+               // Debug.Log("down");
                 boardController.MoveDown(row, column);
-                //down swipe
             }
         }
             
@@ -81,6 +77,14 @@ namespace Board
         {
             this.row = row;
             this.column = column;
+        }
+
+        public void DestroyView()
+        {
+            //disable
+           // this.gameObject.SetActive(false);
+            //destroy
+            Destroy(this.gameObject);
         }
     }
 }
