@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c577ffe5ac2c074c8cc06d49ec8b872, type: 3}
   m_Name: BoardSettings
   m_EditorClassIdentifier: 
-  width: 4
-  height: 5
+  width: 3
+  height: 3
   backgroundTileView: {fileID: 3685189621343764631, guid: 5dd2744ce74004c4b99198107ea23821,
     type: 3}
   blockList:

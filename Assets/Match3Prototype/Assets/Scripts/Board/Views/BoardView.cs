@@ -11,6 +11,8 @@ namespace Board
         private int height = 0;
         private GameObject tilePrefab;
         private BgTileView[,] bgTiles;
+        //private BlockView[,] blockViews;
+        private BoardController boardController;
         
         public void SetTilePrefab(GameObject tilePrefab)
         {
@@ -27,6 +29,7 @@ namespace Board
         private void SetupBoard()
         {
             bgTiles = new BgTileView[width,height];
+            //blockViews = new BlockView[width,height];
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -40,10 +43,19 @@ namespace Board
             }
         }
 
+        public void SetBoardControllerRef(BoardController boardController)
+        {
+            this.boardController = boardController;
+        }
+
         public void SpawnBlock(BlockView blockView,int row, int column)
         {            
             GameObject block = Instantiate(blockView.gameObject, bgTiles[row, column].transform.position, Quaternion.identity)as GameObject;
-            block.transform.SetParent(bgTiles[row, column].transform);
+            block.transform.SetParent(bgTiles[row, column].transform);         
+            boardController.blockViews[row, column] = block.GetComponent<BlockView>();
+            boardController.blockViews[row, column].SetBoardViewRef(boardController);
+            boardController.blockViews[row, column].SetRowAndColumn(row, column);
         }
+      
     }
 }

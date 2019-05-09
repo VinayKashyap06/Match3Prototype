@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2053955811995583943}
   - component: {fileID: 2053955811995583942}
   - component: {fileID: 2053955811995583941}
+  - component: {fileID: 7029050285112744184}
   m_Layer: 0
   m_Name: GreenSquare
   m_TagString: Untagged
@@ -93,3 +94,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockEnum: 2
+--- !u!61 &7029050285112744184
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2053955811995583940}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.5859375, y: 0.5859375}
+    newSize: {x: 0.5859375, y: 0.5859375}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.5859375, y: 0.5859375}
+  m_EdgeRadius: 0
