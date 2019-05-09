@@ -69,7 +69,7 @@ namespace Board
                     SpawnRandomBlocks(i, j);
                 }
             }
-            FindMatchAtStart();
+            //FindMatchAtStart();
         }
 
         private void SpawnRandomBlocks(int i, int j)
@@ -115,9 +115,11 @@ namespace Board
                 return;
             }
             Swap(row, column, row + 1, column);
-            if (CheckForMatchPresence(row, column) || CheckForMatchPresence(row + 1, column))
+            bool c1 = CheckForMatchPresence(row, column);
+            bool c2 = CheckForMatchPresence(row+1, column);
+            if (c1 || c2)
             {
-               // Debug.Log("match found");
+                Debug.Log("match found right");
             }
             else
             {
@@ -129,13 +131,15 @@ namespace Board
         {
             if (row - 1 < 0 || column >= height)
             {
-                Debug.Log(width + "///" + height);
+                //Debug.Log(width + "///" + height);
                 return;
             }
             Swap(row, column, row - 1, column);
-            if (CheckForMatchPresence(row, column) || CheckForMatchPresence(row - 1, column))
+            bool c1 = CheckForMatchPresence(row, column);
+            bool c2 = CheckForMatchPresence(row-1, column);
+            if (c1 || c2)
             {
-               // Debug.Log("match found");
+                Debug.Log("match found left");
             }
             else
             {
@@ -152,9 +156,11 @@ namespace Board
                 return;
             }
             Swap(row, column, row, column + 1);
-            if (CheckForMatchPresence(row, column) || CheckForMatchPresence(row, column + 1))
+            bool c1 = CheckForMatchPresence(row, column);
+            bool c2 = CheckForMatchPresence(row, column + 1);
+            if (c1 || c2)
             {
-              //  Debug.Log("match found");
+                Debug.Log("match found up");
                // DestroyMatchedElements();
             }
             else
@@ -172,9 +178,11 @@ namespace Board
                 return;
             }
             Swap(row, column, row, column - 1);
-            if (CheckForMatchPresence(row, column) || CheckForMatchPresence(row, column - 1))
+            bool c1 = CheckForMatchPresence(row, column);
+            bool c2 = CheckForMatchPresence(row, column - 1);
+            if (c1 || c2)
             {
-              //  Debug.Log("match found");
+                Debug.Log("match found down");
             }
             else
             {
@@ -366,14 +374,17 @@ namespace Board
                     }
                 }
             }
-            if (hasNewBlocksSpawned)
-            {
-                FindMatchAtStart();
-            }
+            //if (hasNewBlocksSpawned)
+            //{
+            //    FindMatchAtStart();
+            //}
         }
         public bool CheckForMatchPresence(int row, int column)
         {
-            if (IsFirstElement(row, column) || IsMiddleElement(row, column) || IsLastElement(row, column))
+            bool c1= IsFirstElement(row, column);
+            bool c2= IsMiddleElement(row, column);
+            bool c3 = IsLastElement(row, column);
+            if (c1||c2 ||c3)
             {
                 DestroyMatchedElements();
                 return true;
@@ -384,22 +395,19 @@ namespace Board
             }
         }
         private bool IsFirstElement(int row, int column)
-        {
-          //  Debug.Log("first element check");
+        {  
             if (IsPair(row, column, row, column + 1) && IsPair(row, column, row, column + 2))
             {
                 AddElementsToDestroy(row, column);
                 AddElementsToDestroy(row, column + 1);
-                AddElementsToDestroy(row, column + 2);
-              //  Debug.Log("first element check return type true");
+                AddElementsToDestroy(row, column + 2);            
                 return true;
             }
-            else if (IsPair(row, column, row + 1, column) && IsPair(row, column, row + 2, column))
+           if (IsPair(row, column, row + 1, column) && IsPair(row, column, row + 2, column))
             {
                 AddElementsToDestroy(row, column);
                 AddElementsToDestroy(row + 1, column);
-                AddElementsToDestroy(row + 2, column);
-              //  Debug.Log("first element check return type true");
+                AddElementsToDestroy(row + 2, column);             
                 return true;
             }
             else
@@ -419,7 +427,7 @@ namespace Board
               //  Debug.Log("last element check return type true");
                 return true;
             }
-            else if (IsPair(row, column, row - 1, column) && IsPair(row, column, row - 2, column))
+            if (IsPair(row, column, row - 1, column) && IsPair(row, column, row - 2, column))
             {
                 AddElementsToDestroy(row, column);
                 AddElementsToDestroy(row - 1, column);
@@ -434,8 +442,7 @@ namespace Board
             }
         }
         private bool IsMiddleElement(int row, int column)
-        {
-          //  Debug.Log("middle element check");
+        {         
             if (IsPair(row, column, row, column - 1) && IsPair(row, column, row, column + 1))
             {
                 AddElementsToDestroy(row, column);
@@ -444,7 +451,7 @@ namespace Board
               //  Debug.Log("middle element check return type true");
                 return true;
             }
-            else if (IsPair(row, column, row - 1, column) && IsPair(row, column, row + 1, column))
+            if (IsPair(row, column, row - 1, column) && IsPair(row, column, row + 1, column))
             {
                 AddElementsToDestroy(row, column);
                 AddElementsToDestroy(row - 1, column);

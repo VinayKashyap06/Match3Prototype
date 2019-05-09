@@ -50,7 +50,8 @@ namespace Board
 
         public void SpawnBlock(BlockView blockView,int row, int column)
         {            
-            GameObject block = Instantiate(blockView.gameObject, bgTiles[row, column].transform.position, Quaternion.identity)as GameObject;
+            GameObject block = Instantiate(blockView.gameObject, new Vector3(0,5,0), Quaternion.identity)as GameObject;
+            iTween.MoveTo(block, bgTiles[row, column].transform.position, 1f);
             block.transform.SetParent(bgTiles[row, column].transform);         
             boardController.blockViews[row, column] = block.GetComponent<BlockView>();
             boardController.blockViews[row, column].SetBoardViewRef(boardController);
