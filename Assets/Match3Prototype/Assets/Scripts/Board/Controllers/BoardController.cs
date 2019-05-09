@@ -356,7 +356,6 @@ namespace Board
             return false;
 
         }
-
         private void DestroyMatchedElements()
         {
             for (int k = 0; k < width; k++)
@@ -400,7 +399,8 @@ namespace Board
             {
                 AddElementsToDestroy(row, column);
                 AddElementsToDestroy(row, column + 1);
-                AddElementsToDestroy(row, column + 2);            
+                AddElementsToDestroy(row, column + 2);
+                CheckForContinousElements(row, column+2);
                 return true;
             }
            if (IsPair(row, column, row + 1, column) && IsPair(row, column, row + 2, column))
@@ -416,6 +416,26 @@ namespace Board
                 return false;
             }
         }
+
+        private void CheckForContinousElements(int row, int column)
+        {
+            if (!IsInBounds(row, column))
+                return;
+            int x = row;
+            int y = column;
+            while(IsPair(row,column,x,y))
+            {
+
+            }
+        }
+
+        private bool IsInBounds(int row, int column)
+        {
+            if (row < 0 || row >= width || column < 0 || column >= height)
+                return false;
+            return true;
+        }
+
         private bool IsLastElement(int row, int column)
         {
            // Debug.Log("last element check");
