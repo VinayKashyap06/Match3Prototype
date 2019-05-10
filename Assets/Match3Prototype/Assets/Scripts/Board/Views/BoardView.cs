@@ -10,7 +10,7 @@ namespace Board
         private int width = 0;
         private int height = 0;
         private GameObject tilePrefab;
-        private BgTileView[,] bgTiles;
+        public BgTileView[,] bgTiles;
         //private BlockView[,] blockViews;
         private BoardController boardController;
         
@@ -57,6 +57,20 @@ namespace Board
             boardController.blockViews[row, column].SetBoardViewRef(boardController);
             boardController.blockViews[row, column].SetRowAndColumn(row, column);
         }
-      
+        public void SwapBoards(int row1,int column1, int row2, int column2) 
+        {
+            //swap positions
+            Vector3 tempPos = Vector3.zero;
+            tempPos=bgTiles[row1, column1].transform.position;
+             iTween.MoveTo(bgTiles[row1, column1].gameObject, bgTiles[row2, column2].transform.position,1);
+             iTween.MoveTo(bgTiles[row2, column2].gameObject, tempPos,1);
+            //bgTiles[row2, column2].transform.position = tempPos;
+
+            //swap in data structure
+            BgTileView temp;
+            temp = bgTiles[row2, column2];
+            bgTiles[row2, column2] = bgTiles[row1, column1];
+            bgTiles[row1, column1] = temp;
+        } 
     }
 }

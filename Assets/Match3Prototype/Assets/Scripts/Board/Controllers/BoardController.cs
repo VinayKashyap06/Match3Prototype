@@ -10,13 +10,13 @@ namespace Board
         private List<BlockDataStruct> blockViewsList;
         private List<int> cummulativeProbabilities = new List<int>();
         private int width;
-        private int height;
-        //private Dictionary<int, int> elementsToDestroy = new Dictionary<int, int>();
+        private int height;        
         public BlockView[,] blockViews;
         public BlockView[,] elementsToDestroy;
         private bool hasNewBlocksSpawned = true;
         private bool canMatch = false;
         private bool checkDeadlock = true;
+        private IndexListStruct upperElementIndex;
 
         public BoardController(int height, int width, BgTileView bgTileView)
         {
@@ -26,7 +26,6 @@ namespace Board
             elementsToDestroy = new BlockView[width, height];
             SpawnBoard(height, width, bgTileView);
         }
-
         private void SpawnBoard(int height, int width, BgTileView bgTileView)
         {
             GameObject board = new GameObject("Board");
@@ -35,7 +34,6 @@ namespace Board
             currentBoardView.SetTilePrefab(bgTileView.gameObject);
             currentBoardView.SetWidthAndHeight(width, height);
             currentBoardView.SetBoardControllerRef(this);
-
         }
         public void SetBlockViews(List<BlockDataStruct> blockViews)
         {
@@ -49,11 +47,9 @@ namespace Board
                 }
                 int newProb = previousProbability + blockViews[i].percentage;
                 cummulativeProbabilities.Add(newProb);
-            }
-            // Debug.Log(cummulativeProbabilities[cummulativeProbabilities.Count - 1]);
+            }           
             SpawnBlocks();
         }
-
         private void SpawnBlocks()
         {
             //Debug.Log("spawn blocks called");
@@ -69,9 +65,8 @@ namespace Board
                     SpawnRandomBlocks(i, j);
                 }
             }
-            //FindMatchAtStart();
+            FindMatchAtStart();
         }
-
         private void SpawnRandomBlocks(int i, int j)
         {
             int rand = UnityEngine.Random.Range(0, 100);
@@ -101,47 +96,34 @@ namespace Board
                 k++;
             }
         }
-
         private void SpawnSingleBlock(BlockView blockView, int row, int column)
         {
             currentBoardView.SpawnBlock(blockView, row, column);
         }
-
         public void MoveRight(int row, int column)
         {
-            if (row + 1 >= width || column >= height)
-            {
-              //  Debug.Log(width + "///" + height);
+            if (row + 1 >= width)
+            {               
                 return;
             }
             Swap(row, column, row + 1, column);
             bool c1 = CheckForMatchPresence(row, column);
-            bool c2 = CheckForMatchPresence(row+1, column);
-            if (c1 || c2)
+            bool c2 = CheckForMatchPresence(row + 1, column);
+            if (!c1 && !c2)
             {
-                Debug.Log("match found right");
-            }
-            else
-            {
-                //swapBack
                 Swap(row + 1, column, row, column);
             }
         }
         public void MoveLeft(int row, int column)
         {
-            if (row - 1 < 0 || column >= height)
-            {
-                //Debug.Log(width + "///" + height);
+            if (row - 1 < 0)
+            {                
                 return;
             }
             Swap(row, column, row - 1, column);
             bool c1 = CheckForMatchPresence(row, column);
-            bool c2 = CheckForMatchPresence(row-1, column);
-            if (c1 || c2)
-            {
-                Debug.Log("match found left");
-            }
-            else
+            bool c2 = CheckForMatchPresence(row - 1, column);
+            if (!c1 && !c2)
             {
                 //swapBack
                 Swap(row - 1, column, row, column);
@@ -151,19 +133,13 @@ namespace Board
         public void MoveUp(int row, int column)
         {
             if (column + 1 >= height)
-            {
-               // Debug.Log(width + "///" + height);
+            {             
                 return;
             }
             Swap(row, column, row, column + 1);
             bool c1 = CheckForMatchPresence(row, column);
             bool c2 = CheckForMatchPresence(row, column + 1);
-            if (c1 || c2)
-            {
-                Debug.Log("match found up");
-               // DestroyMatchedElements();
-            }
-            else
+            if (!c1 && !c2)
             {
                 //swapBack
                 Swap(row, column + 1, row, column);
@@ -174,25 +150,20 @@ namespace Board
         {
             if (column - 1 < 0)
             {
-               // Debug.Log(width + "///" + height);
                 return;
             }
             Swap(row, column, row, column - 1);
             bool c1 = CheckForMatchPresence(row, column);
             bool c2 = CheckForMatchPresence(row, column - 1);
-            if (c1 || c2)
+            if (!c1 && !c2)
             {
-                Debug.Log("match found down");
-            }
-            else
-            {
-                //swapBack
                 Swap(row, column - 1, row, column);
             }
 
         }
         private void Swap(int row1, int column1, int row2, int column2)
         {
+
             blockViews[row1, column1].SetRowAndColumn(row2, column2);
             blockViews[row2, column2].SetRowAndColumn(row1, column1);
             //swap parent
@@ -207,7 +178,7 @@ namespace Board
             blockViews[row2, column2] = blockViews[row1, column1];
             blockViews[row1, column1] = temp;
         }
-        public void FindMatchAtStart()
+        public async void FindMatchAtStart()
         {
             hasNewBlocksSpawned = false;
             // Debug.Log("finding matches");
@@ -215,28 +186,27 @@ namespace Board
             {
                 for (int j = 0; j < height; j++)
                 {
-                    CheckForRightPresence(i, j);
-                    CheckForUpPresence(i, j);
+                    CheckForMatchPresence(i, j);
                 }
             }
+            await new WaitForSeconds(2f);
             DestroyMatchedElements();
             checkDeadlock = CheckForPossibleMatches();
             if (!checkDeadlock)
             {
                 //reshuffle
-                Debug.Log("<color=blue>reshuffle</color>");
+               // Debug.Log("<color=blue>reshuffle</color>");
                 SpawnBlocks();
             }
 
         }
-
         private bool CheckForPossibleMatches()
         {
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
-                    if (CheckForPossibleRightMatch(i, j)||CheckForPossibleLeftMatch(i,j)||CheckForPossibleDownMatch(i,j)||CheckForPossibleUpMatch(i,j))
+                    if (CheckForPossibleRightMatch(i, j) || CheckForPossibleLeftMatch(i, j) || CheckForPossibleDownMatch(i, j) || CheckForPossibleUpMatch(i, j))
                     {
                         return true;
                     }
@@ -244,7 +214,6 @@ namespace Board
             }
             return false;
         }
-
         private bool CheckForPossibleRightMatch(int row, int column)
         {
             if (row + 1 >= width)
@@ -266,17 +235,17 @@ namespace Board
         }
         private bool CheckForPossibleLeftMatch(int row, int column)
         {
-            if (row - 1 <0)
+            if (row - 1 < 0)
             {
                 return false;
             }
-            if (!IsPair(row, column, row -1, column))
+            if (!IsPair(row, column, row - 1, column))
             {
                 return false;
             }
             else
             {
-                if (row - 2 <0)
+                if (row - 2 < 0)
                 {
                     return false;
                 }
@@ -289,7 +258,7 @@ namespace Board
             {
                 return false;
             }
-            if (!IsPair(row, column, row, column+1))
+            if (!IsPair(row, column, row, column + 1))
             {
                 return false;
             }
@@ -299,65 +268,64 @@ namespace Board
                 {
                     return false;
                 }
-                return CheckForOtherThreeDirections(row, column+2, blockViews[row, column].blockEnum, "down");
+                return CheckForOtherThreeDirections(row, column + 2, blockViews[row, column].blockEnum, "down");
             }
         }
         private bool CheckForPossibleDownMatch(int row, int column)
         {
-            if (column - 1 <0)
+            if (column - 1 < 0)
             {
                 return false;
             }
-            if (!IsPair(row, column, row, column-1))
+            if (!IsPair(row, column, row, column - 1))
             {
                 return false;
             }
             else
             {
-                if (column-2 <0)
+                if (column - 2 < 0)
                 {
                     return false;
                 }
-                return CheckForOtherThreeDirections(row, column-2, blockViews[row, column].blockEnum, "up");
+                return CheckForOtherThreeDirections(row, column - 2, blockViews[row, column].blockEnum, "up");
             }
         }
-
         private bool CheckForOtherThreeDirections(int row, int column, BlockEnum blockEnum, string directionToIgnore)
         {
             if (row + 1 < width)
-            {           
+            {
                 if (blockViews[row + 1, column].blockEnum == blockEnum && directionToIgnore != "right")
                 {
                     return true;
                 }
             }
             if (row - 1 >= 0)
-            {          
+            {
                 if (blockViews[row - 1, column].blockEnum == blockEnum && directionToIgnore != "left")
                 {
                     return true;
                 }
             }
             if (column + 1 < height)
-            {        
+            {
                 if (blockViews[row, column + 1].blockEnum == blockEnum && directionToIgnore != "up")
                 {
                     return true;
                 }
             }
             if (column - 1 >= 0)
-            {           
+            {
                 if (blockViews[row, column - 1].blockEnum == blockEnum && directionToIgnore != "down")
                 {
                     return true;
                 }
             }
-             
             return false;
 
         }
         private void DestroyMatchedElements()
         {
+            List<IndexListStruct> destroyedElement = new List<IndexListStruct>();
             for (int k = 0; k < width; k++)
             {
                 for (int l = 0; l < height; l++)
@@ -367,182 +335,102 @@ namespace Board
                         elementsToDestroy[k, l].DestroyView();
                         elementsToDestroy[k, l] = null;
                         blockViews[k, l] = null;
-                        Debug.Log("element deleted at row "+k +"column "+l);
-                        SpawnRandomBlocks(k,l);
+                        SpawnRandomBlocks(k, l);
                         hasNewBlocksSpawned = true;
                     }
                 }
             }
-            //if (hasNewBlocksSpawned)
-            //{
-            //    FindMatchAtStart();
-            //}
-        }
+            if (hasNewBlocksSpawned)
+            {
+                FindMatchAtStart();
+            }
+        }    
         public bool CheckForMatchPresence(int row, int column)
         {
-            bool c1= IsFirstElement(row, column);
-            bool c2= IsMiddleElement(row, column);
-            bool c3 = IsLastElement(row, column);
-            if (c1||c2 ||c3)
+            List<IndexListStruct> positiveVerticalMatches;
+            List<IndexListStruct> negativeVerticalMatches;
+            List<IndexListStruct> negativeHorizontalMatches;
+            List<IndexListStruct> positiveHorizontalMatches;
+            positiveHorizontalMatches = CheckForMatchRecursive(row, column, "x", 1);
+            positiveVerticalMatches = CheckForMatchRecursive(row, column, "y", 1);
+            negativeVerticalMatches = CheckForMatchRecursive(row, column, "y", -1);
+            negativeHorizontalMatches = CheckForMatchRecursive(row, column, "x", -1);
+            bool isMatch = false;
+            if ((negativeHorizontalMatches.Count <= 1 && positiveVerticalMatches.Count <= 1))
             {
-                DestroyMatchedElements();
-                return true;
+                isMatch = false;
             }
-            else
+            if ((negativeHorizontalMatches.Count <= 1 && negativeVerticalMatches.Count <= 1))
             {
-                return false;
+                isMatch = false;
             }
-        }
-        private bool IsFirstElement(int row, int column)
-        {  
-            if (IsPair(row, column, row, column + 1) && IsPair(row, column, row, column + 2))
+            if ((positiveHorizontalMatches.Count <= 1 && negativeVerticalMatches.Count <= 1))
             {
-                AddElementsToDestroy(row, column);
-                AddElementsToDestroy(row, column + 1);
-                AddElementsToDestroy(row, column + 2);
-                //  CheckForContinousElements(row,column,row, column+3);
-                //int concurrentColumn = column + 3;
-                //if (concurrentColumn < height)
-                //{
-                //    while (IsPair(row, column, row, concurrentColumn))
-                //    {
-                //        Debug.Log("While Is 1st element adding row" + row + " column" + concurrentColumn);
-                //        AddElementsToDestroy(row, concurrentColumn);
-                //        concurrentColumn++;
-                //        if (concurrentColumn >= height)
-                //        {
-                //            break;
-                //        }
-                //    }
-                //}
-                return true;
+                isMatch = false;
             }
-           if (IsPair(row, column, row + 1, column) && IsPair(row, column, row + 2, column))
+            if ((positiveHorizontalMatches.Count <= 1 && positiveVerticalMatches.Count <= 1))
             {
-                AddElementsToDestroy(row, column);
-                AddElementsToDestroy(row + 1, column);
-                AddElementsToDestroy(row + 2, column);             
-                return true;
+                isMatch = false;
             }
-            else
+            if ((negativeVerticalMatches.Count >= 1 && positiveVerticalMatches.Count >= 1))
             {
-            //    Debug.Log("first element check return type false");
-                return false;
-            }
-        }
-
-        private void CheckForContinousElements(int row,int column,int row2, int column2)
-        {
-            if (!IsInBounds(row2, column2))
-                return;
-            int x = row2;
-            int y = column2;
-            while(IsPair(row,column,x,y))
-            {
-                AddElementsToDestroy(x, y);
-                
-            }
-        }
-
-        private bool IsInBounds(int row, int column)
-        {
-            if (row < 0 || row >= width || column < 0 || column >= height)
-                return false;
-            return true;
-        }
-
-        private bool IsLastElement(int row, int column)
-        {
-           // Debug.Log("last element check");
-            if (IsPair(row, column, row, column - 1) && IsPair(row, column, row, column - 2))
-            {
-                AddElementsToDestroy(row, column);
-                AddElementsToDestroy(row, column - 1);
-                AddElementsToDestroy(row, column - 2);
-              //  Debug.Log("last element check return type true");
-                return true;
-            }
-            if (IsPair(row, column, row - 1, column) && IsPair(row, column, row - 2, column))
-            {
-                AddElementsToDestroy(row, column);
-                AddElementsToDestroy(row - 1, column);
-                AddElementsToDestroy(row - 2, column);
-               // Debug.Log("last element check return type true");
-                return true;
-            }
-            else
-            {
-               // Debug.Log("last element check return type false");
-                return false;
-            }
-        }
-        private bool IsMiddleElement(int row, int column)
-        {         
-            if (IsPair(row, column, row, column - 1) && IsPair(row, column, row, column + 1))
-            {
-                AddElementsToDestroy(row, column);
-                AddElementsToDestroy(row, column - 1);
-                AddElementsToDestroy(row, column + 1);
-              //  Debug.Log("middle element check return type true");
-                return true;
-            }
-            if (IsPair(row, column, row - 1, column) && IsPair(row, column, row + 1, column))
-            {
-                AddElementsToDestroy(row, column);
-                AddElementsToDestroy(row - 1, column);
-                AddElementsToDestroy(row + 1, column);
-              //  Debug.Log("middle element check return type true");
-                return true;
-            }
-            else
-            {
-              //  Debug.Log("middle element check return type false");
-                return false;
-            }
-        }
-        private void CheckForUpPresence(int row, int column)
-        {
-            if (column + 1 >= height)
-                return ;
-            if (!IsPair(row, column, row, column + 1))
-            {
-                return ;
-            }
-            else
-            {
-                if (column + 2 >= height)
-                    return ;
-                if (IsPair(row, column + 1, row, column + 2))
+                isMatch = true;
+                for (int i = 0; i < positiveVerticalMatches.Count; i++)
                 {
-                    AddElementsToDestroy(row, column);
-                    AddElementsToDestroy(row, column + 1);
-                    AddElementsToDestroy(row, column + 2);
-                    
-                }              
-            }
-        }
-        private void CheckForRightPresence(int row, int column)
-        {
-            //Debug.Log("checking right");
-            if (row + 1 >= width)
-            {
-                return ;
-            }
-            if (!IsPair(row, column, row + 1, column))
-            {
-                return ;
-            }
-            else
-            {
-                if (row + 2 >= width)
-                    return ;
-                if (IsPair(row + 1, column, row + 2, column))
+                    AddElementsToDestroy(positiveVerticalMatches[i].row, positiveVerticalMatches[i].column);
+                }
+                for (int i = 0; i < negativeVerticalMatches.Count; i++)
                 {
-                    AddElementsToDestroy(row, column);
-                    AddElementsToDestroy(row + 1, column);
-                    AddElementsToDestroy(row + 2, column);                 
+                    AddElementsToDestroy(negativeVerticalMatches[i].row, negativeVerticalMatches[i].column);
                 }
             }
+            if ((positiveHorizontalMatches.Count >= 1 && negativeHorizontalMatches.Count >= 1))
+            {
+                isMatch = true;
+                for (int i = 0; i < positiveHorizontalMatches.Count; i++)
+                {
+                    AddElementsToDestroy(positiveHorizontalMatches[i].row, positiveHorizontalMatches[i].column);
+                }
+                for (int i = 0; i < negativeHorizontalMatches.Count; i++)
+                {
+                    AddElementsToDestroy(negativeHorizontalMatches[i].row, negativeHorizontalMatches[i].column);
+                }
+
+            }
+            if ((positiveHorizontalMatches.Count >= 2 || negativeHorizontalMatches.Count >= 2))
+            {
+                isMatch = true;
+                for (int i = 0; i < positiveHorizontalMatches.Count; i++)
+                {
+                    AddElementsToDestroy(positiveHorizontalMatches[i].row, positiveHorizontalMatches[i].column);
+                }
+                for (int i = 0; i < negativeHorizontalMatches.Count; i++)
+                {
+                    AddElementsToDestroy(negativeHorizontalMatches[i].row, negativeHorizontalMatches[i].column);
+                }
+            }
+            if ((positiveVerticalMatches.Count >= 2 || negativeVerticalMatches.Count >= 2))
+            {
+
+                isMatch = true;
+                for (int i = 0; i < positiveVerticalMatches.Count; i++)
+                {
+                    AddElementsToDestroy(positiveVerticalMatches[i].row, positiveVerticalMatches[i].column);
+                }
+                for (int i = 0; i < negativeVerticalMatches.Count; i++)
+                {
+                    AddElementsToDestroy(negativeVerticalMatches[i].row, negativeVerticalMatches[i].column);
+                }
+            }
+
+            if (isMatch)
+            { AddElementsToDestroy(row, column); }
+            else
+            { return isMatch; }
+
+            DestroyMatchedElements();
+
+            return isMatch;
         }
         private void AddElementsToDestroy(int row, int column)
         {
@@ -555,5 +443,135 @@ namespace Board
 
             return (blockViews[row1, column1].blockEnum == blockViews[row2, column2].blockEnum);
         }
+        private List<IndexListStruct> CheckForMatchRecursive(int row, int column, string direction, int directionAxis)
+        {
+            int rowIterator = 0;
+            int columnIterator = 0;
+            List<IndexListStruct> listOfIndexes = new List<IndexListStruct>();
+            List<IndexListStruct> recursiveResult = new List<IndexListStruct>();
+
+            if (direction == "x" && directionAxis == 1)
+            {
+                rowIterator = row + 1;
+                columnIterator = column;
+            }
+            else if (direction == "x" && directionAxis == -1)
+            {
+                rowIterator = row - 1;
+                columnIterator = column;
+            }
+            else if (direction == "y" && directionAxis == +1)
+            {
+
+                rowIterator = row;
+                columnIterator = column + 1;
+
+            }
+            else if (direction == "y" && directionAxis == -1)
+            {
+                rowIterator = row;
+                columnIterator = column - 1;
+            }
+
+            if (IsPair(row, column, rowIterator, columnIterator))
+            {
+                IndexListStruct indexListStruct = new IndexListStruct();
+                indexListStruct.row = rowIterator;
+                indexListStruct.column = columnIterator;
+                listOfIndexes.Add(indexListStruct);
+                recursiveResult = CheckForMatchRecursive(rowIterator, columnIterator, direction, directionAxis);
+                foreach (IndexListStruct item in recursiveResult)
+                {
+                    listOfIndexes.Add(item);
+                }
+
+            }
+            else
+            {
+                return listOfIndexes;
+            }
+
+            return listOfIndexes;
+        }
+
+        //private void SwapToEmptySpot(int row1, int column1, int row2, int column2)
+        //{
+        //    if (blockViews[row2, column2] == null)
+        //    {
+        //        return;
+        //    }
+        //    blockViews[row1, column1] = blockViews[row2, column2];
+        //    blockViews[row1, column1].ChangeParent(currentBoardView.bgTiles[row2, column2].transform);
+        //    blockViews[row2, column2].ChangeParent(currentBoardView.bgTiles[row1, column1].transform);
+        //    blockViews[row2, column2] = null;
+
+        //}
+        //private BlockView GetUpperElement(int row, int column)
+        //{
+        //    int columnIterator = column + 1;
+        //    BlockView blockView;
+        //    if (columnIterator >= height)
+        //    {
+        //        return null;
+        //    }
+        //    if (blockViews[row, columnIterator] == null)
+        //    {
+        //        blockView = GetUpperElement(row, columnIterator);
+        //    }
+        //    else
+        //    {
+        //        blockView = blockViews[row, columnIterator];
+        //        // blockViews[row, columnIterator] = null;                
+        //    }
+        //    upperElementIndex.row = row;
+        //    upperElementIndex.column = columnIterator;
+        //    return blockView;
+        //}
+
+        //for (int i = 0; i < width; i++)
+        //{
+        //    for (int j = 0; j < height; j++)
+        //    {
+        //        if (blockViews[i, j] == null)
+        //        {
+        //            blockViews[i, j] = GetUpperElement(i, j);
+        //            if (blockViews[i, j] == null)
+        //            {
+        //                Debug.Log("upper block null" + i + "fffrfrfr" + j);
+        //                SpawnRandomBlocks(i, j);
+        //            }
+        //            else
+        //            {
+        //                Debug.Log("swap at loaction : " + i + " row with" + upperElementIndex.row + " column " + j + "  column" + upperElementIndex.column);
+        //                SwapToEmptySpot(i, j, upperElementIndex.row, upperElementIndex.column);
+        //                SpawnRandomBlocks(upperElementIndex.row, upperElementIndex.column);
+        //            }
+        //            hasNewBlocksSpawned = true;
+        //        }
+        //    }
+        //}
+
+        //private void ReShuffle()
+        //{
+        //    BlockView[,] tempArr = new BlockView[width, height];
+
+        //    int randWidth = UnityEngine.Random.Range(0, width);
+        //    int prevWidth = randWidth;
+        //    int randHeight = UnityEngine.Random.Range(0, height);
+        //    int prevHeight = randHeight;
+        //    int count = 0;
+        //    while (count <= width * height)
+        //    {
+        //        randWidth = UnityEngine.Random.Range(0, width);
+        //        randHeight = UnityEngine.Random.Range(0, height);
+        //        if (tempArr[randWidth, randHeight] == blockViews[randWidth, randHeight])
+        //        {
+        //            continue;
+        //        }
+        //        tempArr[randWidth, randHeight] = blockViews[randWidth, randHeight];
+        //        count++;
+        //    }
+        //    blockViews = tempArr;
+        //}
     }
 }

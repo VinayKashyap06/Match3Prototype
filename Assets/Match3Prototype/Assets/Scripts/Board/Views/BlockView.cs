@@ -14,8 +14,8 @@ namespace Board
         private Camera cam;
         private BoardController boardController;
         float angle;
-        private int row;
-        private int column;
+        public int row;
+        public int column;
 
         private void Start()
         {
@@ -29,17 +29,14 @@ namespace Board
         {
             startPosition = cam.ScreenToWorldPoint(Input.mousePosition);
         }
-
         private void OnMouseUp()
         {
             finalPosition = cam.ScreenToWorldPoint(Input.mousePosition);
             CalculateSwipe();
         }
-
         private void CalculateSwipe()
         {
             angle=Mathf.Atan2(finalPosition.y - startPosition.y, finalPosition.x - startPosition.x)* 180/Mathf.PI;
-         //   Debug.Log(angle);
             ShuffleBlocks();
         }
         private void ShuffleBlocks()
@@ -56,20 +53,19 @@ namespace Board
                 
             }
             else if (angle>=135 || angle<=-135)
-            {                
-               // Debug.Log("left");
+            {                            
                 boardController.MoveLeft(row, column);
             }
             else if (angle>-135 && angle<=-45)
             {
-               // Debug.Log("down");
                 boardController.MoveDown(row, column);
             }
         }
             
-        public void ChangeParent(Transform pos)
+        public void ChangeParent(Transform parent)
         {
-            this.gameObject.transform.SetParent( pos);
+            this.gameObject.transform.parent = null;
+            this.gameObject.transform.SetParent( parent);
             this.gameObject.transform.localPosition = Vector3.zero;
         }
 
@@ -79,11 +75,11 @@ namespace Board
             this.column = column;
         }
 
-        public void DestroyView()
-        {
-            //disable
-           // this.gameObject.SetActive(false);
-            //destroy
+        public async void DestroyView()
+        {            
+            this.transform.parent = null;
+            iTween.MoveTo(this.gameObject, new Vector3(0, -1, 0),1f);
+            await new WaitForSeconds(1);
             Destroy(this.gameObject);
         }
     }

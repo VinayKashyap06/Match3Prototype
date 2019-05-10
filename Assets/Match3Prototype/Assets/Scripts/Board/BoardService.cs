@@ -12,7 +12,7 @@ namespace Board
 
         public BoardService(BoardScriptableObject boardScriptableObject)
         {
-            Debug.Log("service created");
+            //Debug.Log("service created");
             boardController = new BoardController(boardScriptableObject.height,boardScriptableObject.width,boardScriptableObject.backgroundTileView);
             boardController.SetBlockViews(boardScriptableObject.blockList);
         }      
