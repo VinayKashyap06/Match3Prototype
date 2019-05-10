@@ -64,7 +64,7 @@ namespace Board
                     }
                     SpawnRandomBlocks(i, j);
                 }
-            }
+            }            
             FindMatchAtStart();
         }
         private void SpawnRandomBlocks(int i, int j)
@@ -180,6 +180,7 @@ namespace Board
         }
         public async void FindMatchAtStart()
         {
+            await new WaitForSeconds(1);
             hasNewBlocksSpawned = false;
             // Debug.Log("finding matches");
             for (int i = 0; i < width; i++)
@@ -189,7 +190,7 @@ namespace Board
                     CheckForMatchPresence(i, j);
                 }
             }
-            await new WaitForSeconds(2f);
+            await new WaitForSeconds(1f);
             DestroyMatchedElements();
             checkDeadlock = CheckForPossibleMatches();
             if (!checkDeadlock)
@@ -494,6 +495,8 @@ namespace Board
             return listOfIndexes;
         }
 
+        
+        /// Haven't Tested these functions/features will do it after wards.
         //private void SwapToEmptySpot(int row1, int column1, int row2, int column2)
         //{
         //    if (blockViews[row2, column2] == null)
