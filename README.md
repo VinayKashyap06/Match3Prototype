@@ -14,8 +14,8 @@ Match 3 or more same colored tiles.
 - Uses async await as a substitute for coroutines.
 
 
----Not tested/Buggy features (Commented at the end of board controller):
--> At deadlock , reshuffle.
--> After matched tiles removed, place the upper tile in that position. 
+--Not tested/Buggy features (Commented at the end of board controller):
+- At deadlock , reshuffle.
+- After matched tiles removed, place the upper tile in that position. 
 
 Needs refactoring to improve readability
