@@ -400,7 +400,7 @@ namespace Board
                 AddElementsToDestroy(row, column);
                 AddElementsToDestroy(row, column + 1);
                 AddElementsToDestroy(row, column + 2);
-                CheckForContinousElements(row, column+2);
+               CheckForContinousElements(row,column,row, column+3);
                 return true;
             }
            if (IsPair(row, column, row + 1, column) && IsPair(row, column, row + 2, column))
@@ -417,15 +417,16 @@ namespace Board
             }
         }
 
-        private void CheckForContinousElements(int row, int column)
+        private void CheckForContinousElements(int row,int column,int row2, int column2)
         {
-            if (!IsInBounds(row, column))
+            if (!IsInBounds(row2, column2))
                 return;
-            int x = row;
-            int y = column;
+            int x = row2;
+            int y = column2;
             while(IsPair(row,column,x,y))
             {
-
+                AddElementsToDestroy(x, y);
+                
             }
         }
 

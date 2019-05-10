@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BoardSettings
   m_EditorClassIdentifier: 
   width: 3
-  height: 3
+  height: 4
   backgroundTileView: {fileID: 3685189621343764631, guid: 5dd2744ce74004c4b99198107ea23821,
     type: 3}
   blockList:
