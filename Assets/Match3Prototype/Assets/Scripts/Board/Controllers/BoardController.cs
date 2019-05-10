@@ -400,7 +400,21 @@ namespace Board
                 AddElementsToDestroy(row, column);
                 AddElementsToDestroy(row, column + 1);
                 AddElementsToDestroy(row, column + 2);
-               CheckForContinousElements(row,column,row, column+3);
+                //  CheckForContinousElements(row,column,row, column+3);
+                //int concurrentColumn = column + 3;
+                //if (concurrentColumn < height)
+                //{
+                //    while (IsPair(row, column, row, concurrentColumn))
+                //    {
+                //        Debug.Log("While Is 1st element adding row" + row + " column" + concurrentColumn);
+                //        AddElementsToDestroy(row, concurrentColumn);
+                //        concurrentColumn++;
+                //        if (concurrentColumn >= height)
+                //        {
+                //            break;
+                //        }
+                //    }
+                //}
                 return true;
             }
            if (IsPair(row, column, row + 1, column) && IsPair(row, column, row + 2, column))
