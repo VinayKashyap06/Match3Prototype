@@ -2,8 +2,8 @@
 Match 3 or more same colored tiles.
 
 -Architecture Used:
-*MVC Pattern
-*Singleton Pattern
+- MVC Pattern
+- Singleton Pattern
 
 -Features :
 - Tiles gets spawned based on probability from Scriptable Object. 
